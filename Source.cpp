@@ -2,6 +2,15 @@
 #include<iostream>
 #include<string>
 #include<algorithm>
+#include"Button.hpp"
+
+//Initial Declarations of SFML components
+sf::RenderWindow renderWindow(sf::VideoMode(660, 360), "Arthur- The Gladiator (Level 3)");
+sf::Font font;
+sf::Event event;
+sf::Texture boxTexture, bgTexture;
+
+std::vector<int> randomInts;
 
 //Random Initialization of Numbers
 void findRandomInt(int first, int last, std::vector<int>& randomList)
@@ -19,47 +28,27 @@ void findRandomInt(int first, int last, std::vector<int>& randomList)
 	}
 }
 
-int main()
+//Creating the Vector Pair of Boxes and Numbers
+void setVector(std::vector<int> randomList)
 {
-	//Initial Declarations of SFML components
-	sf::RenderWindow renderWindow(sf::VideoMode(660, 360), "Arthur- The Gladiator (Level 3)");
-	sf::Font font;
-	sf::Event event;
-	sf::Texture boxTexture, bgTexture;
-	if (!bgTexture.loadFromFile("images/dungeon.jpg")) {
-		std::cout << "Error Displaying Background Image" << std::endl;
-	};
-	if (!boxTexture.loadFromFile("images/box.png")) {
-		std::cout << "Error Displaying Boxes" << std::endl;
-	};
-	if (!font.loadFromFile("fonts/numberFont.ttf")) {
-		std::cout << "Error Displaying Font" << std::endl;
-	}
-
-	//Find the random values to be displayed
-	std::vector<int> randomInts;
-	findRandomInt(1, 8, randomInts);
-	for (int i = 0; i < randomInts.size(); i++)
-	{
-		std::cout << i+1 << ": " << randomInts[i] << std::endl;
-	}
-
-	//Make pair of Number and Sprites
+	int begin = 20;
 	sf::Sprite bgSprite(bgTexture), boxSprite(boxTexture);
+	std::vector<std::pair<sf::Sprite, sf::Text>> boxSprites(8);
 	bgSprite.scale(1.1f, 1.2f);
 	boxSprite.scale(0.05f, 0.05f);
-	std::vector<std::pair<sf::Sprite, sf::Text>> boxSprites(8);
-	int begin = 20;
 	for (int i = 0; i < boxSprites.size(); i++) {
 		boxSprites[i].first = boxSprite;
 		boxSprites[i].first.setPosition(begin, 225);
 
-		sf::Text message(std::to_string(randomInts[i]), font);
+		sf::Text message(std::to_string(randomList[i]), font);
 		boxSprites[i].second = message;
 		boxSprites[i].second.scale(0.8f, 0.8f);
 		boxSprites[i].second.setPosition(begin + 25, 250);
 		begin += 80;
 	}
+	Button newButton(100, 100, 150, 50,
+		font, "Start Game",
+		sf::Color::Black, sf::Color::Green, sf::Color::Blue);
 	//Rendering the Window
 	while (renderWindow.isOpen()) {
 		while (renderWindow.pollEvent(event)) {
@@ -68,7 +57,6 @@ int main()
 		}
 		renderWindow.clear();
 		renderWindow.draw(bgSprite);
-
 		//NEED TO FIND A BETTER WAY
 		renderWindow.draw(boxSprites[0].first);
 		renderWindow.draw(boxSprites[0].second);
@@ -88,9 +76,39 @@ int main()
 		renderWindow.draw(boxSprites[7].second);
 		renderWindow.display();
 
-		std::sort(randomInts.begin(), randomInts.end());
-		renderWindow.clear();
-		renderWindow.draw(bgSprite);
+	}
+}
+
+
+
+int main()
+{
+	//Loading the Components
+	if (!bgTexture.loadFromFile("images/dungeon.jpg")) {
+		std::cout << "Error Displaying Background Image" << std::endl;
+	};
+	if (!boxTexture.loadFromFile("images/box.png")) {
+		std::cout << "Error Displaying Boxes" << std::endl;
+	};
+	if (!font.loadFromFile("fonts/numberFont.ttf")) {
+		std::cout << "Error Displaying Font" << std::endl;
+	}
+
+	//Find the random values to be displayed
+	findRandomInt(1, 8, randomInts);
+	for (int i = 0; i < randomInts.size(); i++)
+	{
+		std::cout << i+1 << ": " << randomInts[i] << std::endl;
+	}
+
+	//Calls the function for rendering
+	setVector(randomInts);
+
+	//Sorts the numbers
+	std::sort(randomInts.begin(), randomInts.end());
+	for (int i = 0; i < randomInts.size(); i++)
+	{
+		std::cout << randomInts[i] << " ";
 	}
 }
 
