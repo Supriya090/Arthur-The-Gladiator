@@ -7,9 +7,11 @@
 sf::Font font, openFont;
 sf::Event event;
 sf::Texture boxTexture, bgTexture, openBgTexture;
+sf::Color color(181, 101, 29);
+sf::RenderWindow renderWindow(sf::VideoMode(1000, 900), "Arthur- The Gladiator (Level 3)");
 
 std::vector<int> randomInts;
-int playerMoves = 20, randomNum = rand()%40 + 1;
+int playerMoves = 20, randomNum = rand()%40 + 1, randomNumIndex;
 void gameOver();
 void setVector(std::vector<int>);
 
@@ -67,21 +69,11 @@ void openingWindow()
 		dSortButton.setFillColor(sf::Color::White);
 		dSortButton.setPosition(sf::Vector2f(450, 350));
 
-		sf::RectangleShape Horizontal1(sf::Vector2f(750, 3));
-		Horizontal1.setFillColor(sf::Color::White);
-		Horizontal1.setPosition(sf::Vector2f(135, 170));
-
-		sf::RectangleShape Vertical1(sf::Vector2f(3, 250));
-		Vertical1.setFillColor(sf::Color::White);
-		Vertical1.setPosition(sf::Vector2f(135, 170));
-
-		sf::RectangleShape Horizontal2(sf::Vector2f(750, 3));
-		Horizontal2.setFillColor(sf::Color::White);
-		Horizontal2.setPosition(sf::Vector2f(135, 420));
-
-		sf::RectangleShape Vertical2(sf::Vector2f(3, 250));
-		Vertical2.setFillColor(sf::Color::White);
-		Vertical2.setPosition(sf::Vector2f(885, 170));
+		sf::RectangleShape Outline(sf::Vector2f(750, 250));
+		Outline.setFillColor(sf::Color::Transparent);
+		Outline.setPosition(sf::Vector2f(135, 170));
+		Outline.setOutlineThickness(3);
+		Outline.setOutlineColor(sf::Color::White);
 
 		sf::Text dSort("Continue", openFont, 20);
 		dSort.setPosition(sf::Vector2f(475, 356));
@@ -95,10 +87,7 @@ void openingWindow()
 		renderOpeningWindow.draw(openingInfo3);
 		
 		renderOpeningWindow.draw(dSortButton);
-		renderOpeningWindow.draw(Horizontal1);
-		renderOpeningWindow.draw(Vertical1);
-		renderOpeningWindow.draw(Horizontal2);
-		renderOpeningWindow.draw(Vertical2);
+		renderOpeningWindow.draw(Outline);
 		renderOpeningWindow.draw(dSort);
 		renderOpeningWindow.display();
 	}
@@ -127,7 +116,12 @@ void findRandomInt(int first, int last, std::vector<int> &randomList)
 //Creating the Vector Pair of Boxes and Numbers
 void setVector(std::vector<int> randomList)
 {
-	sf::RenderWindow renderWindow(sf::VideoMode(1000, 900), "Arthur- The Gladiator (Level 3)");
+	//sf::RenderWindow renderWindow(sf::VideoMode(1000, 900), "Arthur- The Gladiator (Level 3)");
+	sf::RectangleShape selectSquare(sf::Vector2f(85, 85));
+	selectSquare.setFillColor(sf::Color::Transparent);
+	selectSquare.setOutlineColor(sf::Color::White);
+	selectSquare.setOutlineThickness(3);
+	selectSquare.setPosition(10, 195);
 	//Rendering the Window
 	while (renderWindow.isOpen())
 	{
@@ -143,22 +137,103 @@ void setVector(std::vector<int> randomList)
 				int X = event.mouseButton.x;
 				int Y = event.mouseButton.y;
 
-				if (X > 490 && X < 750 && Y > 30 && Y < 60)
+				if (X > 470 && X < 730 && Y > 50 && Y < 80)
 				{
 					//sort in ascending order
 					std::sort(randomList.begin(), randomList.end());
-					if (playerMoves < 10)
-						std::cout << "You don't have enough moves to sort! Forfeit if you " << std::endl;
 					playerMoves -= 10;
 					if (playerMoves < 0)	gameOver();
 				}
 
-				if (X > 750 && X < 1000 && Y > 30 && Y < 60)
+				if (X > 730 && X < 985 && Y > 50 && Y < 80)
 				{
 					//sort in descending order
 					std::sort(randomList.begin(), randomList.end(), std::greater<int>());
 					playerMoves -= 10;
-					if (playerMoves <= 0)	gameOver();
+					if (playerMoves < 0)	gameOver();
+				}
+			}
+
+			if (event.type == sf::Event::EventType::KeyPressed)
+			{
+				switch (event.key.code)
+				{
+				case sf::Keyboard::Left:
+				{
+					if (selectSquare.getPosition().x == 10)
+					{
+						if (selectSquare.getPosition().y == 195)
+						{
+							selectSquare.setPosition(10, selectSquare.getPosition().y);
+						}
+						else
+						{
+							selectSquare.setPosition(910, selectSquare.getPosition().y - 140);
+							playerMoves += 1;
+						}
+					}
+					else
+					{
+						selectSquare.move(-100.f, 0.f);
+						playerMoves += 1;
+					}
+					std::cout << "Left" << std::endl;
+					break;
+				}
+
+				case sf::Keyboard::Right:
+				{
+					if (selectSquare.getPosition().x > 900)
+					{
+						if (selectSquare.getPosition().y == (195+3*140))
+						{
+							
+							selectSquare.setPosition(910, selectSquare.getPosition().y);
+						}
+						else
+						{
+							selectSquare.setPosition(10, selectSquare.getPosition().y + 140);
+							playerMoves -= 1;
+						}
+					}
+					else
+					{
+						selectSquare.move(100.f, 0.f);
+						playerMoves -= 1;
+					}
+					if (playerMoves < 0)	gameOver();
+					std::cout << "Right" << std::endl;
+					std::cout << selectSquare.getPosition().x << " "<<selectSquare.getPosition().y<< std::endl;
+					break;
+				}
+
+				case sf::Keyboard::Enter:
+				{
+					int xPos = selectSquare.getPosition().x;
+					int yPos = selectSquare.getPosition().y;
+					if (randomNumIndex / 10 == 0)
+					{
+						if (xPos > (randomNumIndex - 1) * 100 && xPos < (randomNumIndex * 100 - 50) && yPos == 195)
+						{
+							std::cout << "Princess is here" << std::endl;
+						}
+					}
+					else
+					{
+						if (xPos > (randomNumIndex%10 - 1) * 100 && xPos < ((randomNumIndex%10) * 100 - 50) && yPos == (randomNumIndex / 10)*140 + 195)
+						{
+							std::cout << "Princess is here" << std::endl;
+						}
+					}
+					std::cout << "Enter" << std::endl;
+					break;
+				}
+
+				case sf::Keyboard::Down:
+				{
+					std::cout << "Down" << std::endl;
+					break;
+				}
 				}
 			}
 		}
@@ -167,41 +242,42 @@ void setVector(std::vector<int> randomList)
 		std::vector<std::pair<sf::Sprite, sf::Text>> boxSprites(40);
 
 		bgSprite.scale(2.0f, 3.0f);
-		boxSprite.scale(0.07f, 0.07f);
+		boxSprite.scale(0.06f, 0.06f);
 
 		sf::RectangleShape dSortButton(sf::Vector2f(250, 30));
-		dSortButton.setFillColor(sf::Color::Green);
-		dSortButton.setPosition(sf::Vector2f(490, 30));
+		dSortButton.setFillColor(color);
+		dSortButton.setPosition(sf::Vector2f(475, 50));
 
 		sf::RectangleShape aSortButton(sf::Vector2f(250, 30));
-		aSortButton.setFillColor(sf::Color::Green);
-		aSortButton.setPosition(sf::Vector2f(750, 30));
+		aSortButton.setFillColor(color);
+		aSortButton.setPosition(sf::Vector2f(735, 50));
 
-		sf::CircleShape movesButton(40);
-		movesButton.setFillColor(sf::Color::Green);
-		movesButton.setPosition(sf::Vector2f(750, 80));
+		sf::RectangleShape movesButton(sf::Vector2f(120, 30));
+		movesButton.setFillColor(color);
+		movesButton.setPosition(sf::Vector2f(865, 100));
 
-		sf::Text aSort("Sort in Descending order", font, 20);
-		aSort.setPosition(sf::Vector2f(775, 35));
-		aSort.setFillColor(sf::Color::Black);
 
-		sf::Text dSort("Sort in Ascending order", font, 20);
-		dSort.setPosition(sf::Vector2f(515, 35));
-		dSort.setFillColor(sf::Color::Black);
+		sf::Text aSort("Sort in Descending Order", font, 16);
+		aSort.setPosition(sf::Vector2f(750, 55));
+		aSort.setFillColor(sf::Color::White);
 
-		sf::Text movesText("Moves", font, 20);
-		movesText.setPosition(sf::Vector2f(775, 90));
-		movesText.setFillColor(sf::Color::Black);
+		sf::Text dSort("Sort in Ascending Order", font, 16);
+		dSort.setPosition(sf::Vector2f(495, 55));
+		dSort.setFillColor(sf::Color::White);
 
-		sf::Text playerMovesText(std::to_string(playerMoves), font, 20);
-		playerMovesText.setPosition(sf::Vector2f(775, 100));
-		playerMovesText.setFillColor(sf::Color::Black);
+		sf::Text movesText("Moves: ", font, 16);
+		movesText.setPosition(sf::Vector2f(880, 105));
+		movesText.setFillColor(sf::Color::White);
+
+		sf::Text playerMovesText(std::to_string(playerMoves), font, 16);
+		playerMovesText.setPosition(sf::Vector2f(950, 105));
+		playerMovesText.setFillColor(sf::Color::White);
 
 		int coordY = 200;
 		int a = 0;
 		for (int j = 0; j < 4; j++)
 		{
-			int coordX = 20;
+			int coordX = 15;
 			for (int i = 0; i < boxSprites.size() / 4; i++)
 			{
 				boxSprites[a].first = boxSprite;
@@ -210,7 +286,7 @@ void setVector(std::vector<int> randomList)
 				sf::Text message(std::to_string(randomList[a]), font);
 				boxSprites[a].second = message;
 				boxSprites[a].second.scale(0.8f, 0.8f);
-				boxSprites[a].second.setPosition(coordX + 35, coordY + 35);
+				boxSprites[a].second.setPosition(coordX + 25, coordY + 35);
 				coordX += 100;
 				a++;
 			}
@@ -232,6 +308,7 @@ void setVector(std::vector<int> randomList)
 		renderWindow.draw(movesButton);
 		renderWindow.draw(movesText);
 		renderWindow.draw(playerMovesText);
+		renderWindow.draw(selectSquare);
 		renderWindow.display();
 	}
 }
@@ -247,7 +324,7 @@ int main()
 	{
 		std::cout << "Error Displaying Boxes" << std::endl;
 	};
-	if (!font.loadFromFile("fonts/numberFont.ttf"))
+	if (!font.loadFromFile("fonts/test.ttf"))
 	{
 		std::cout << "Error Displaying Font" << std::endl;
 	}
@@ -257,16 +334,17 @@ int main()
 	for (int i = 0; i < randomInts.size(); i++)
 	{
 		std::cout << i + 1 << ": " << randomInts[i] << std::endl;
+		if (randomInts[i] == randomNum)	randomNumIndex = i + 1;
 	}
-
+	std::cout << "Random number "<<randomNum<<" is at index " << randomNumIndex<< std::endl;
 	//Calls the function for rendering
-	openingWindow();
-	//setVector(randomInts);
+	//openingWindow();
+	setVector(randomInts);
 }
 
 void gameOver()
 {
-	sf::RenderWindow renderWindow(sf::VideoMode(1000, 900), "Arthur- The Gladiator (Level 3)");
+	//sf::RenderWindow renderWindow(sf::VideoMode(1000, 900), "Arthur- The Gladiator (Level 3)");
 	std::cout << "You are out of moves. Game Over!" << std::endl;
 	renderWindow.close();
 }
