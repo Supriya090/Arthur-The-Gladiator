@@ -11,7 +11,7 @@ sf::Color color(181, 101, 29);
 sf::RenderWindow renderWindow(sf::VideoMode(1000, 900), "Arthur- The Gladiator (Level 3)");
 
 std::vector<int> randomInts;
-int playerMoves = 20, randomNum = rand()%40 + 1, randomNumIndex;
+int playerMoves = 20, randomNum = rand()%40 + 1, randomNumIndex, flag = 0;
 void gameOver();
 void setVector(std::vector<int>);
 
@@ -141,6 +141,7 @@ void setVector(std::vector<int> randomList)
 				{
 					//sort in ascending order
 					std::sort(randomList.begin(), randomList.end());
+					flag = 1;
 					playerMoves -= 10;
 					if (playerMoves < 0)	gameOver();
 				}
@@ -149,6 +150,7 @@ void setVector(std::vector<int> randomList)
 				{
 					//sort in descending order
 					std::sort(randomList.begin(), randomList.end(), std::greater<int>());
+					flag = -1;
 					playerMoves -= 10;
 					if (playerMoves < 0)	gameOver();
 				}
@@ -211,6 +213,8 @@ void setVector(std::vector<int> randomList)
 				{
 					int xPos = selectSquare.getPosition().x;
 					int yPos = selectSquare.getPosition().y;
+					if (flag == 1)	randomNumIndex = randomNum;
+					if (flag == -1)	randomNumIndex = 41 - randomNum;
 					if (randomNumIndex / 10 == 0)
 					{
 						if (xPos > (randomNumIndex - 1) * 100 && xPos < (randomNumIndex * 100 - 50) && yPos == 195)
