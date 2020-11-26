@@ -6,12 +6,12 @@
 //Initial Declarations of SFML components
 sf::Font font, openFont;
 sf::Event event;
-sf::Texture boxTexture, bgTexture, openBgTexture;
+sf::Texture boxTexture, bgTexture, openBgTexture, princessTexture;
 sf::Color color(181, 101, 29);
 sf::RenderWindow renderWindow(sf::VideoMode(1000, 900), "Arthur- The Gladiator (Level 3)");
 
 std::vector<int> randomInts;
-int playerMoves = 20, randomNum = rand()%40 + 1, randomNumIndex, flag = 0;
+int playerMoves = 20, randomNum = rand()%40 + 1, randomNumIndex, flag = 0, gameWon = 0, test = 0;
 void gameOver();
 void setVector(std::vector<int>);
 
@@ -118,14 +118,21 @@ void setVector(std::vector<int> randomList)
 {
 	//sf::RenderWindow renderWindow(sf::VideoMode(1000, 900), "Arthur- The Gladiator (Level 3)");
 	sf::RectangleShape selectSquare(sf::Vector2f(85, 85));
+	sf::Time elapsed;
+	sf::Clock clock;
+
 	selectSquare.setFillColor(sf::Color::Transparent);
 	selectSquare.setOutlineColor(sf::Color::White);
 	selectSquare.setOutlineThickness(3);
 	selectSquare.setPosition(10, 195);
+
+	sf::Sprite princessSprite(princessTexture);
+	princessSprite.setTextureRect(sf::IntRect(30, 30, 80, 130));
+	princessSprite.setScale(0.35f, 0.35f);
+
 	//Rendering the Window
 	while (renderWindow.isOpen())
 	{
-
 		while (renderWindow.pollEvent(event))
 		{
 
@@ -177,7 +184,7 @@ void setVector(std::vector<int> randomList)
 					else
 					{
 						selectSquare.move(-100.f, 0.f);
-						playerMoves += 1;
+						playerMoves -= 1;
 					}
 					std::cout << "Left" << std::endl;
 					break;
@@ -215,20 +222,34 @@ void setVector(std::vector<int> randomList)
 					int yPos = selectSquare.getPosition().y;
 					if (flag == 1)	randomNumIndex = randomNum;
 					if (flag == -1)	randomNumIndex = 41 - randomNum;
+					std::cout << clock.getElapsedTime().asSeconds() << std::endl;
+					
+					princessSprite.setPosition(randomNumIndex * 100 - 70, (randomNumIndex / 10) * 140 + 215);
 					if (randomNumIndex / 10 == 0)
 					{
 						if (xPos > (randomNumIndex - 1) * 100 && xPos < (randomNumIndex * 100 - 50) && yPos == 195)
 						{
+							gameWon = 1;
 							std::cout << "Princess is here" << std::endl;
+							int currYPos = princessSprite.getPosition().y;
+							
+								princessSprite.move(0, -65);
+								test = 1;
+								
+							
+							//princessSprite.move(100.0f, 10.0f);
 						}
 					}
 					else
 					{
 						if (xPos > (randomNumIndex%10 - 1) * 100 && xPos < ((randomNumIndex%10) * 100 - 50) && yPos == (randomNumIndex / 10)*140 + 195)
 						{
+							gameWon = 1;
 							std::cout << "Princess is here" << std::endl;
+							gameOver();
 						}
 					}
+					std::cout << gameWon << std::endl;
 					std::cout << "Enter" << std::endl;
 					break;
 				}
@@ -260,6 +281,27 @@ void setVector(std::vector<int> randomList)
 		movesButton.setFillColor(color);
 		movesButton.setPosition(sf::Vector2f(865, 100));
 
+		sf::RectangleShape princessInfoBox(sf::Vector2f(230, 30));
+		princessInfoBox.setFillColor(color);
+		princessInfoBox.setPosition(sf::Vector2f(625, 100));
+
+		sf::RectangleShape congratulationsBox(sf::Vector2f(650, 150));
+		congratulationsBox.setFillColor(color);
+		congratulationsBox.setPosition(175, 360);
+
+		sf::RectangleShape congratulationsBorder(sf::Vector2f(610, 110));
+		congratulationsBorder.setFillColor(sf::Color::Transparent);
+		congratulationsBorder.setPosition(sf::Vector2f(195, 380));
+		congratulationsBorder.setOutlineThickness(3);
+		congratulationsBorder.setOutlineColor(sf::Color::White);
+
+		sf::Text congratulationsText("Congratulations! You won with " + std::to_string(playerMoves) + " moves remaining!",font, 20);
+		congratulationsText.setFillColor(sf::Color::White);
+		congratulationsText.setPosition(sf::Vector2f(225, 420));
+
+		sf::Text princessInfoText("Princess is in Box No. " + std::to_string(randomNum), font, 16);
+		princessInfoText.setFillColor(sf::Color::White);
+		princessInfoText.setPosition(sf::Vector2f(640, 105));
 
 		sf::Text aSort("Sort in Descending Order", font, 16);
 		aSort.setPosition(sf::Vector2f(750, 55));
@@ -299,6 +341,7 @@ void setVector(std::vector<int> randomList)
 		renderWindow.clear();
 		renderWindow.draw(bgSprite);
 
+		//if (gameWon) 
 		//drawing the boxes
 		for (int i = 0; i < 40; i++)
 		{
@@ -311,8 +354,17 @@ void setVector(std::vector<int> randomList)
 		renderWindow.draw(aSort);
 		renderWindow.draw(movesButton);
 		renderWindow.draw(movesText);
+		renderWindow.draw(princessInfoBox);
+		renderWindow.draw(princessInfoText);
 		renderWindow.draw(playerMovesText);
 		renderWindow.draw(selectSquare);
+		if (gameWon)
+		{
+			renderWindow.draw(princessSprite);
+			renderWindow.draw(congratulationsBox);
+			renderWindow.draw(congratulationsBorder);
+			renderWindow.draw(congratulationsText);
+		}
 		renderWindow.display();
 	}
 }
@@ -328,9 +380,13 @@ int main()
 	{
 		std::cout << "Error Displaying Boxes" << std::endl;
 	};
-	if (!font.loadFromFile("fonts/test.ttf"))
+	if (!font.loadFromFile("fonts/mainFont.ttf"))
 	{
 		std::cout << "Error Displaying Font" << std::endl;
+	}
+	if (!princessTexture.loadFromFile("images/princess.png", sf::IntRect(0, 0, 110, 170)))
+	{
+		std::cout << "Error displaying Princess Image" << std::endl;
 	}
 
 	//Find the random values to be displayed
@@ -342,13 +398,14 @@ int main()
 	}
 	std::cout << "Random number "<<randomNum<<" is at index " << randomNumIndex<< std::endl;
 	//Calls the function for rendering
-	//openingWindow();
+	openingWindow();
 	setVector(randomInts);
 }
 
 void gameOver()
 {
 	//sf::RenderWindow renderWindow(sf::VideoMode(1000, 900), "Arthur- The Gladiator (Level 3)");
+	//sf::sleep(sf::milliseconds(1000));
 	std::cout << "You are out of moves. Game Over!" << std::endl;
 	renderWindow.close();
 }
