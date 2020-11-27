@@ -3,11 +3,11 @@
 #include <string>
 #include <algorithm>
 #include<time.h>
-#include <chrono>
-#include <thread>
+//#include <chrono>
+//#include <thread>
 
 using namespace std;
-using namespace std::chrono_literals;
+//using namespace std::chrono_literals;
 //Initial Declarations of SFML components
 sf::Font font, openFont;
 sf::Event event;
@@ -16,7 +16,7 @@ sf::Color color(181, 101, 29);
 sf::RenderWindow renderWindow(sf::VideoMode(1000, 900), "Arthur- The Gladiator (Level 3)");
 
 std::vector<int> randomInts;
-int playerMoves = 20, randomNum, randomNumIndex, flag = 0, gameWon = 0, test = 0;
+int playerMoves = 20, randomNum, randomNumIndex, flag = 0, gameWon = 0, noMoves = 0;
 void gameOver();
 void setVector(std::vector<int>);
 
@@ -259,6 +259,7 @@ void setVector(std::vector<int> randomList)
 	sf::Sprite princessSprite(princessTexture);
 	princessSprite.setTextureRect(sf::IntRect(30, 30, 80, 130));
 	princessSprite.setScale(0.35f, 0.35f);
+	princessSprite.setPosition(300, 300);
 
 	//Rendering the Window
 	while (renderWindow.isOpen())
@@ -268,28 +269,32 @@ void setVector(std::vector<int> randomList)
 
 			if (event.type == sf::Event::EventType::Closed)
 				renderWindow.close();
-
+			if (playerMoves <= 0)
+			{
+				noMoves = 1;
+				gameOver();
+			}
 			if (event.type == sf::Event::EventType::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
 			{
 				int X = event.mouseButton.x;
 				int Y = event.mouseButton.y;
-
-				if (X > 470 && X < 730 && Y > 50 && Y < 80)
+				if (playerMoves > 0)
 				{
-					//sort in ascending order
-					mergeSort(randomList, 0, randomList.size() - 1);
-					flag = 1;
-					playerMoves -= 10;
-					if (playerMoves < 0)	gameOver();
-				}
+					if (X > 470 && X < 730 && Y > 50 && Y < 80)
+					{
+						//sort in ascending order
+						mergeSort(randomList, 0, randomList.size() - 1);
+						flag = 1;
+						playerMoves -= 10;
+					}
 
-				if (X > 730 && X < 985 && Y > 50 && Y < 80)
-				{
-					//sort in descending order
-					quickSort(randomList, 0, randomList.size() - 1);
-					flag = -1;
-					playerMoves -= 10;
-					if (playerMoves < 0)	gameOver();
+					if (X > 730 && X < 985 && Y > 50 && Y < 80)
+					{
+						//sort in descending order
+						quickSort(randomList, 0, randomList.size() - 1);
+						flag = -1;
+						playerMoves -= 10;
+					}
 				}
 			}
 
@@ -299,22 +304,26 @@ void setVector(std::vector<int> randomList)
 				{
 				case sf::Keyboard::Left:
 				{
-					if (selectSquare.getPosition().x == 10)
+					if (playerMoves > 0)
 					{
-						if (selectSquare.getPosition().y == 195)
+						if (selectSquare.getPosition().x == 10)
 						{
-							selectSquare.setPosition(10, selectSquare.getPosition().y);
+							if (selectSquare.getPosition().y == 195)
+							{
+								//selectSquare.setPosition(10, selectSquare.getPosition().y);
+								selectSquare.setPosition(910, 195 + 3 * 140);
+							}
+							else
+							{
+								selectSquare.setPosition(910, selectSquare.getPosition().y - 140);
+								playerMoves -= 1;
+							}
 						}
 						else
 						{
-							selectSquare.setPosition(910, selectSquare.getPosition().y - 140);
-							playerMoves += 1;
+							selectSquare.move(-100.f, 0.f);
+							playerMoves -= 1;
 						}
-					}
-					else
-					{
-						selectSquare.move(-100.f, 0.f);
-						playerMoves -= 1;
 					}
 					std::cout << "Left" << std::endl;
 					break;
@@ -322,25 +331,28 @@ void setVector(std::vector<int> randomList)
 
 				case sf::Keyboard::Right:
 				{
-					if (selectSquare.getPosition().x > 900)
+					if (playerMoves > 0)
 					{
-						if (selectSquare.getPosition().y == (195+3*140))
+						if (selectSquare.getPosition().x > 900)
 						{
-							
-							selectSquare.setPosition(910, selectSquare.getPosition().y);
+							if (selectSquare.getPosition().y == (195 + 3 * 140))
+							{
+								//selectSquare.setPosition(910, selectSquare.getPosition().y);
+								selectSquare.setPosition(10, 195);
+							}
+							else
+							{
+								selectSquare.setPosition(10, selectSquare.getPosition().y + 140);
+								playerMoves -= 1;
+							}
 						}
 						else
 						{
-							selectSquare.setPosition(10, selectSquare.getPosition().y + 140);
+							selectSquare.move(100.f, 0.f);
 							playerMoves -= 1;
 						}
 					}
-					else
-					{
-						selectSquare.move(100.f, 0.f);
-						playerMoves -= 1;
-					}
-					if (playerMoves < 0)	gameOver();
+					//if (playerMoves < 0)	gameOver();
 					std::cout << "Right" << std::endl;
 					std::cout << selectSquare.getPosition().x << " "<<selectSquare.getPosition().y<< std::endl;
 					break;
@@ -352,36 +364,39 @@ void setVector(std::vector<int> randomList)
 					int yPos = selectSquare.getPosition().y;
 					if (flag == 1)	randomNumIndex = randomNum;
 					if (flag == -1)	randomNumIndex = 41 - randomNum;
-					for (int i = 0; i < randomInts.size(); i++)
+					int remVal = randomNumIndex % 10;
+					int divVal = randomNumIndex / 10;
+					if (remVal == 0)
 					{
-						cout << randomInts[i] << endl;
+						remVal = 10;
+						divVal--;
 					}
-					princessSprite.setPosition(randomNumIndex * 100 - 70, (randomNumIndex / 10) * 140 + 215);
-					if (randomNumIndex / 10 == 0)
+					princessSprite.setPosition((remVal) * 100 - 70, (divVal) * 140 + 215);
+					if (playerMoves >= 0)
 					{
-						if (xPos > (randomNumIndex - 1) * 100 && xPos < (randomNumIndex * 100 - 50) && yPos == 195)
+						if (divVal == 0)
 						{
-							gameWon = 1;
-							std::cout << "Princess is here" << std::endl;
-							int currYPos = princessSprite.getPosition().y;
-							
+							if (xPos > (randomNumIndex - 1) * 100 && xPos < (randomNumIndex * 100 - 50) && yPos == 195)
+							{
+								gameWon = 1;
+								std::cout << "Princess is here" << std::endl;
 								princessSprite.move(0, -65);
-								
-								
-							
-							//princessSprite.move(100.0f, 10.0f);
+							}
 						}
-					}
-					else
-					{
-						if (xPos > (randomNumIndex%10 - 1) * 100 && xPos < ((randomNumIndex%10) * 100 - 50) && yPos == (randomNumIndex / 10)*140 + 195)
+						else
 						{
-							gameWon = 1;
-							std::cout << "Princess is here" << std::endl;
-							//gameOver();
+							if (xPos > (remVal - 1) * 100 && xPos < ((remVal) * 100 - 50) && yPos == (divVal) * 140 + 195)
+							{
+								gameWon = 1;
+								std::cout << "Princess is here" << std::endl;
+								std::cout << princessSprite.getPosition().y << std::endl;
+								princessSprite.move(0, -65);
+								//gameOver();
+							}
 						}
+						std::cout << gameWon << std::endl;
+						playerMoves--;
 					}
-					std::cout << gameWon << std::endl;
 					std::cout << "Enter" << std::endl;
 					break;
 				}
@@ -498,6 +513,10 @@ void setVector(std::vector<int> randomList)
 			renderWindow.draw(congratulationsText);
 		}
 		renderWindow.display();
+		//if (gameWon)
+		//{
+			//gameOver();
+		//}
 	}
 }
 
@@ -539,9 +558,7 @@ int main()
 void gameOver()
 {
 	//sf::RenderWindow renderWindow(sf::VideoMode(1000, 900), "Arthur- The Gladiator (Level 3)");
-	//sf::sleep(sf::milliseconds(1000));
-	std::cout << "Test" << std::endl;
-	std::this_thread::sleep_for(2s);
 	std::cout << "You are out of moves. Game Over!" << std::endl;
+	//std::this_thread::sleep_for(2s);
 	renderWindow.close();
 }
