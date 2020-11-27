@@ -2,7 +2,12 @@
 #include <iostream>
 #include <string>
 #include <algorithm>
+#include<time.h>
+#include <chrono>
+#include <thread>
 
+using namespace std;
+using namespace std::chrono_literals;
 //Initial Declarations of SFML components
 sf::Font font, openFont;
 sf::Event event;
@@ -11,7 +16,7 @@ sf::Color color(181, 101, 29);
 sf::RenderWindow renderWindow(sf::VideoMode(1000, 900), "Arthur- The Gladiator (Level 3)");
 
 std::vector<int> randomInts;
-int playerMoves = 20, randomNum = rand()%40 + 1, randomNumIndex, flag = 0, gameWon = 0, test = 0;
+int playerMoves = 20, randomNum, randomNumIndex, flag = 0, gameWon = 0, test = 0;
 void gameOver();
 void setVector(std::vector<int>);
 
@@ -97,6 +102,133 @@ void openingWindow()
 
 //MAIN SCREEN
 
+//Merge Sort - Ascending
+void merge(vector<int> &randomInts, int l, int m, int r)
+{
+	int n1 = m - l + 1;
+	int n2 = r - m;
+
+	// Create temp arrays
+	vector<int> L(n1), R(n2);
+
+	// Copy data to temp arrays L[] and R[]
+	for (int i = 0; i < n1; i++)
+		L[i] = randomInts[l + i];
+	for (int j = 0; j < n2; j++)
+		R[j] = randomInts[m + 1 + j];
+
+	// Merge the temp arrays back into arr[l..r]
+
+	// Initial index of first subarray
+	int i = 0;
+
+	// Initial index of second subarray
+	int j = 0;
+
+	// Initial index of merged subarray
+	int k = l;
+
+	while (i < n1 && j < n2)
+	{
+		if (L[i] <= R[j])
+		{
+			randomInts[k] = L[i];
+			i++;
+		}
+		else
+		{
+			randomInts[k] = R[j];
+			j++;
+		}
+		k++;
+	}
+
+	// Copy the remaining elements of
+	// L[], if there are any
+	while (i < n1)
+	{
+		randomInts[k] = L[i];
+		i++;
+		k++;
+	}
+
+	// Copy the remaining elements of
+	// R[], if there are any
+	while (j < n2)
+	{
+		randomInts[k] = R[j];
+		j++;
+		k++;
+	}
+}
+
+// l is for left index and r is
+// right index of the sub-array
+// of arr to be sorted */
+void mergeSort(vector<int> &randomInts, int l, int r)
+{
+	if (l >= r)
+	{
+		return; //returns recursively
+	}
+	int m = (l + r - 1) / 2;
+	mergeSort(randomInts, l, m);
+	mergeSort(randomInts, m + 1, r);
+	merge(randomInts, l, m, r);
+}
+//End Ascending Sort
+
+//Quick Sort - Descending
+void swap(int *a, int *b)
+{
+	int t = *a;
+	*a = *b;
+	*b = t;
+}
+
+/* This function takes last element as pivot, places
+the pivot element at its correct position in sorted
+array, and places all smaller (smaller than pivot)
+to left of pivot and all greater elements to right
+of pivot */
+int partition(vector<int> &randomInts, int low, int high)
+{
+	int pivot = randomInts[high]; // pivot
+	int i = (low - 1);            // Index of smaller element
+
+	for (int j = low; j <= high - 1; j++)
+	{
+		// If current element is smaller than the pivot
+		if (randomInts[j] > pivot)
+		{
+			i++; // increment index of smaller element
+			swap(&randomInts[i], &randomInts[j]);
+		}
+	}
+	swap(&randomInts[i + 1], &randomInts[high]);
+	return (i + 1);
+}
+
+/* The main function that implements QuickSort
+arr[] --> Array to be sorted,
+low --> Starting index,
+high --> Ending index */
+void quickSort(vector<int> &randomInts, int low, int high)
+{
+	if (low < high)
+	{
+		/* pi is partitioning index, arr[p] is now
+		at right place */
+		int pi = partition(randomInts, low, high);
+
+		// Separately sort elements before
+		// partition and after partition
+		quickSort(randomInts, low, pi - 1);
+		quickSort(randomInts, pi + 1, high);
+	}
+}
+//End Descending Sort
+
 //Random Initialization of Numbers
 void findRandomInt(int first, int last, std::vector<int> &randomList)
 {
@@ -118,8 +250,6 @@ void setVector(std::vector<int> randomList)
 {
 	//sf::RenderWindow renderWindow(sf::VideoMode(1000, 900), "Arthur- The Gladiator (Level 3)");
 	sf::RectangleShape selectSquare(sf::Vector2f(85, 85));
-	sf::Time elapsed;
-	sf::Clock clock;
 
 	selectSquare.setFillColor(sf::Color::Transparent);
 	selectSquare.setOutlineColor(sf::Color::White);
@@ -147,7 +277,7 @@ void setVector(std::vector<int> randomList)
 				if (X > 470 && X < 730 && Y > 50 && Y < 80)
 				{
 					//sort in ascending order
-					std::sort(randomList.begin(), randomList.end());
+					mergeSort(randomList, 0, randomList.size() - 1);
 					flag = 1;
 					playerMoves -= 10;
 					if (playerMoves < 0)	gameOver();
@@ -156,7 +286,7 @@ void setVector(std::vector<int> randomList)
 				if (X > 730 && X < 985 && Y > 50 && Y < 80)
 				{
 					//sort in descending order
-					std::sort(randomList.begin(), randomList.end(), std::greater<int>());
+					quickSort(randomList, 0, randomList.size() - 1);
 					flag = -1;
 					playerMoves -= 10;
 					if (playerMoves < 0)	gameOver();
@@ -222,8 +352,10 @@ void setVector(std::vector<int> randomList)
 					int yPos = selectSquare.getPosition().y;
 					if (flag == 1)	randomNumIndex = randomNum;
 					if (flag == -1)	randomNumIndex = 41 - randomNum;
-					std::cout << clock.getElapsedTime().asSeconds() << std::endl;
-					
+					for (int i = 0; i < randomInts.size(); i++)
+					{
+						cout << randomInts[i] << endl;
+					}
 					princessSprite.setPosition(randomNumIndex * 100 - 70, (randomNumIndex / 10) * 140 + 215);
 					if (randomNumIndex / 10 == 0)
 					{
@@ -234,7 +366,7 @@ void setVector(std::vector<int> randomList)
 							int currYPos = princessSprite.getPosition().y;
 							
 								princessSprite.move(0, -65);
-								test = 1;
+								
 								
 							
 							//princessSprite.move(100.0f, 10.0f);
@@ -246,7 +378,7 @@ void setVector(std::vector<int> randomList)
 						{
 							gameWon = 1;
 							std::cout << "Princess is here" << std::endl;
-							gameOver();
+							//gameOver();
 						}
 					}
 					std::cout << gameWon << std::endl;
@@ -371,6 +503,8 @@ void setVector(std::vector<int> randomList)
 
 int main()
 {
+	srand(time(NULL));
+	randomNum = rand() % 40 + 1;
 	//Loading the Components
 	if (!bgTexture.loadFromFile("images/dungeon.jpg"))
 	{
@@ -406,6 +540,8 @@ void gameOver()
 {
 	//sf::RenderWindow renderWindow(sf::VideoMode(1000, 900), "Arthur- The Gladiator (Level 3)");
 	//sf::sleep(sf::milliseconds(1000));
+	std::cout << "Test" << std::endl;
+	std::this_thread::sleep_for(2s);
 	std::cout << "You are out of moves. Game Over!" << std::endl;
 	renderWindow.close();
 }
