@@ -2,25 +2,26 @@
 #include <iostream>
 #include <string>
 #include <algorithm>
-#include<time.h>
 #include <chrono>
 #include <thread>
+#include "sorting.h"
 
 using namespace std;
 using namespace std::chrono_literals;
 
+Sorting s1(1, 40);
+
 //Initial Declarations of SFML components
 sf::Font font, openFont;
 sf::Event event;
-sf::Texture boxTexture, bgTexture, openBgTexture, princessTexture;
+sf::Texture bgTexture, openBgTexture, princessTexture;
 sf::Color color(181, 101, 29);
 sf::RenderWindow renderWindow(sf::VideoMode(1000, 900), "Arthur- The Gladiator (Level 3)");
 
-std::vector<int> randomInts;
 int playerMoves = 20, randomNum, randomNumIndex, flag = 0;
 bool gameWon = 0, noMoves = 0, noEnoughMoves = 0, giveUp = 0;
 void gameOver();
-void setVector(std::vector<int>);
+void setVector();
 
 //Opening Screen Begins
 void openingWindow()
@@ -30,7 +31,7 @@ void openingWindow()
 	{
 		std::cout << "Error Displaying Background Image" << std::endl;
 	};
-	
+
 	if (!openFont.loadFromFile("fonts/ArialCE.ttf"))
 	{
 		std::cout << "Error Displaying Font" << std::endl;
@@ -52,7 +53,7 @@ void openingWindow()
 			if (X > 450 && X < 580 && Y > 350 && Y < 390)
 			{
 				renderOpeningWindow.close();
-				setVector(randomInts);
+				setVector();
 			}
 		}
 
@@ -60,9 +61,9 @@ void openingWindow()
 		std::vector<sf::Text> openingInfoText(5);
 
 		sf::Text openingInfo1("Princess is in Box No. " + std::to_string(randomNum), openFont, 20);
-		sf::Text openingInfo2("You have " + std::to_string(playerMoves) + " moves remaining.", openFont , 20);
+		sf::Text openingInfo2("You have " + std::to_string(playerMoves) + " moves remaining.", openFont, 20);
 		sf::Text openingInfo3("Sorting in either order takes 10 moves. Press continue to enter the game.", openFont, 20);
-		
+
 		openingInfo1.setPosition(410, 200);
 		openingInfo1.setFillColor(sf::Color::White);
 
@@ -85,14 +86,14 @@ void openingWindow()
 		sf::Text dSort("Continue", openFont, 20);
 		dSort.setPosition(sf::Vector2f(475, 356));
 		dSort.setFillColor(sf::Color::Black);
-		
+
 		renderOpeningWindow.clear();
 		renderOpeningWindow.draw(bgSprite);
 
 		renderOpeningWindow.draw(openingInfo1);
 		renderOpeningWindow.draw(openingInfo2);
 		renderOpeningWindow.draw(openingInfo3);
-		
+
 		renderOpeningWindow.draw(dSortButton);
 		renderOpeningWindow.draw(Outline);
 		renderOpeningWindow.draw(dSort);
@@ -101,154 +102,8 @@ void openingWindow()
 }
 //Opening Screen Ends
 
-
 //MAIN SCREEN
-
-//Merge Sort - Ascending
-void merge(vector<int> &randomInts, int l, int m, int r)
-{
-	int n1 = m - l + 1;
-	int n2 = r - m;
-
-	// Create temp arrays
-	vector<int> L(n1), R(n2);
-
-	// Copy data to temp arrays L[] and R[]
-	for (int i = 0; i < n1; i++)
-		L[i] = randomInts[l + i];
-	for (int j = 0; j < n2; j++)
-		R[j] = randomInts[m + 1 + j];
-
-	// Merge the temp arrays back into arr[l..r]
-
-	// Initial index of first subarray
-	int i = 0;
-
-	// Initial index of second subarray
-	int j = 0;
-
-	// Initial index of merged subarray
-	int k = l;
-
-	while (i < n1 && j < n2)
-	{
-		if (L[i] <= R[j])
-		{
-			randomInts[k] = L[i];
-			i++;
-		}
-		else
-		{
-			randomInts[k] = R[j];
-			j++;
-		}
-		k++;
-	}
-
-	// Copy the remaining elements of
-	// L[], if there are any
-	while (i < n1)
-	{
-		randomInts[k] = L[i];
-		i++;
-		k++;
-	}
-
-	// Copy the remaining elements of
-	// R[], if there are any
-	while (j < n2)
-	{
-		randomInts[k] = R[j];
-		j++;
-		k++;
-	}
-}
-
-// l is for left index and r is
-// right index of the sub-array
-// of arr to be sorted */
-void mergeSort(vector<int> &randomInts, int l, int r)
-{
-	if (l >= r)
-	{
-		return; //returns recursively
-	}
-	int m = (l + r - 1) / 2;
-	mergeSort(randomInts, l, m);
-	mergeSort(randomInts, m + 1, r);
-	merge(randomInts, l, m, r);
-}
-//End Ascending Sort
-
-//Quick Sort - Descending
-void swap(int *a, int *b)
-{
-	int t = *a;
-	*a = *b;
-	*b = t;
-}
-
-/* This function takes last element as pivot, places
-the pivot element at its correct position in sorted
-array, and places all smaller (smaller than pivot)
-to left of pivot and all greater elements to right
-of pivot */
-int partition(vector<int> &randomInts, int low, int high)
-{
-	int pivot = randomInts[high]; // pivot
-	int i = (low - 1);            // Index of smaller element
-
-	for (int j = low; j <= high - 1; j++)
-	{
-		// If current element is smaller than the pivot
-		if (randomInts[j] > pivot)
-		{
-			i++; // increment index of smaller element
-			swap(&randomInts[i], &randomInts[j]);
-		}
-	}
-	swap(&randomInts[i + 1], &randomInts[high]);
-	return (i + 1);
-}
-
-/* The main function that implements QuickSort
-arr[] --> Array to be sorted,
-low --> Starting index,
-high --> Ending index */
-void quickSort(vector<int> &randomInts, int low, int high)
-{
-	if (low < high)
-	{
-		/* pi is partitioning index, arr[p] is now
-		at right place */
-		int pi = partition(randomInts, low, high);
-
-		// Separately sort elements before
-		// partition and after partition
-		quickSort(randomInts, low, pi - 1);
-		quickSort(randomInts, pi + 1, high);
-	}
-}
-//End Descending Sort
-
-//Random Initialization of Numbers
-void findRandomInt(int first, int last, std::vector<int> &randomList)
-{
-	for (int i = first; i <= last; i++)
-	{
-		randomList.push_back(i);
-	}
-	int swapIndex;
-	for (int i = 0; i < randomList.size(); i++)
-	{
-		std::cout << rand() << std::endl;
-		swapIndex = rand() % randomList.size();
-		std::swap(randomList[i], randomList[swapIndex]);
-	}
-}
-
-//Creating the Vector Pair of Boxes and Numbers
-void setVector(std::vector<int> randomList)
+void setVector()
 {
 	//sf::RenderWindow renderWindow(sf::VideoMode(1000, 900), "Arthur- The Gladiator (Level 3)");
 	sf::RectangleShape selectSquare(sf::Vector2f(85, 85));
@@ -282,7 +137,9 @@ void setVector(std::vector<int> randomList)
 					if (X > 470 && X < 730 && Y > 50 && Y < 80)
 					{
 						//sort in ascending order
-						mergeSort(randomList, 0, randomList.size() - 1);
+						s1.displaySort();
+						s1.mergeSort(0, 39);
+						s1.displaySort();
 						flag = 1;
 						playerMoves -= 10;
 					}
@@ -290,7 +147,9 @@ void setVector(std::vector<int> randomList)
 					if (X > 730 && X < 985 && Y > 50 && Y < 80)
 					{
 						//sort in descending order
-						quickSort(randomList, 0, randomList.size() - 1);
+						s1.displaySort();
+						s1.quickSort(0, 39);
+						s1.displaySort();
 						flag = -1;
 						playerMoves -= 10;
 					}
@@ -319,20 +178,18 @@ void setVector(std::vector<int> randomList)
 						{
 							if (selectSquare.getPosition().y == 195)
 							{
-								//selectSquare.setPosition(10, selectSquare.getPosition().y);
 								selectSquare.setPosition(910, 195 + 3 * 140);
 							}
 							else
 							{
 								selectSquare.setPosition(910, selectSquare.getPosition().y - 140);
-								playerMoves -= 1;
 							}
 						}
 						else
 						{
 							selectSquare.move(-100.f, 0.f);
-							playerMoves -= 1;
 						}
+						playerMoves -= 1;
 					}
 					std::cout << "Left" << std::endl;
 					break;
@@ -346,22 +203,19 @@ void setVector(std::vector<int> randomList)
 						{
 							if (selectSquare.getPosition().y == (195 + 3 * 140))
 							{
-								//selectSquare.setPosition(910, selectSquare.getPosition().y);
 								selectSquare.setPosition(10, 195);
 							}
 							else
 							{
 								selectSquare.setPosition(10, selectSquare.getPosition().y + 140);
-								playerMoves -= 1;
 							}
 						}
 						else
 						{
 							selectSquare.move(100.f, 0.f);
-							playerMoves -= 1;
 						}
+						playerMoves -= 1;
 					}
-					//if (playerMoves < 0)	gameOver();
 					std::cout << "Right" << std::endl;
 					std::cout << selectSquare.getPosition().x << " "<<selectSquare.getPosition().y<< std::endl;
 					break;
@@ -400,7 +254,6 @@ void setVector(std::vector<int> randomList)
 								std::cout << "Princess is here" << std::endl;
 								std::cout << princessSprite.getPosition().y << std::endl;
 								princessSprite.move(0, -65);
-								//gameOver();
 							}
 						}
 						std::cout << gameWon << std::endl;
@@ -419,11 +272,10 @@ void setVector(std::vector<int> randomList)
 			}
 		}
 
-		sf::Sprite bgSprite(bgTexture), boxSprite(boxTexture);
-		std::vector<std::pair<sf::Sprite, sf::Text>> boxSprites(40);
+		sf::Sprite bgSprite(bgTexture);
 
 		bgSprite.scale(2.0f, 3.0f);
-		boxSprite.scale(0.06f, 0.06f);
+		
 
 		sf::RectangleShape dSortButton(sf::Vector2f(250, 30));
 		dSortButton.setFillColor(color);
@@ -505,35 +357,16 @@ void setVector(std::vector<int> randomList)
 		giveUpText.setFillColor(sf::Color::White);
 		giveUpText.setPosition(sf::Vector2f(285, 420));
 
-		int coordY = 200;
-		int a = 0;
-		for (int j = 0; j < 4; j++)
-		{
-			int coordX = 15;
-			for (int i = 0; i < boxSprites.size() / 4; i++)
-			{
-				boxSprites[a].first = boxSprite;
-				boxSprites[a].first.setPosition(coordX, coordY);
+		vector<std::pair<sf::Sprite, sf::Text>> box = s1.setBoxIndices();
 
-				sf::Text message(std::to_string(randomList[a]), font);
-				boxSprites[a].second = message;
-				boxSprites[a].second.scale(0.8f, 0.8f);
-				boxSprites[a].second.setPosition(coordX + 25, coordY + 35);
-				coordX += 100;
-				a++;
-			}
-			coordY += 140;
-		}
 		renderWindow.clear();
 		renderWindow.draw(bgSprite);
-
-		//if (gameWon) 
-		//drawing the boxes
 		for (int i = 0; i < 40; i++)
 		{
-			renderWindow.draw(boxSprites[i].first);
-			renderWindow.draw(boxSprites[i].second);
+			renderWindow.draw(box[i].first);
+			renderWindow.draw(box[i].second);
 		}
+
 		renderWindow.draw(dSortButton);
 		renderWindow.draw(aSortButton);
 		renderWindow.draw(dSort);
@@ -589,10 +422,6 @@ int main()
 	{
 		std::cout << "Error Displaying Background Image" << std::endl;
 	};
-	if (!boxTexture.loadFromFile("images/box.png"))
-	{
-		std::cout << "Error Displaying Boxes" << std::endl;
-	};
 	if (!font.loadFromFile("fonts/mainFont.ttf"))
 	{
 		std::cout << "Error Displaying Font" << std::endl;
@@ -602,28 +431,21 @@ int main()
 		std::cout << "Error displaying Princess Image" << std::endl;
 	}
 
-	//Find the random values to be displayed
-	findRandomInt(1, 40, randomInts);
-	for (int i = 0; i < randomInts.size(); i++)
-	{
-		std::cout << i + 1 << ": " << randomInts[i] << std::endl;
-		if (randomInts[i] == randomNum)	randomNumIndex = i + 1;
-	}
+	randomNumIndex = s1.findIndex(randomNum);
 	std::cout << "Random number "<<randomNum<<" is at index " << randomNumIndex<< std::endl;
+	
 	//Calls the function for rendering
 	openingWindow();
-	setVector(randomInts);
 }
 
 void gameOver()
 {
-	if (noMoves)
-	{
-		std::cout << "You are out of moves. Game Over!" << std::endl;
-	}
 	if (gameWon)
 	{
 		std::cout << "Congratulations! You won with " << playerMoves << " moves remaining!" << std::endl;
+	}else if (noMoves)
+	{
+		std::cout << "You are out of moves. Game Over!" << std::endl;
 	}
 	if (giveUp)
 	{
