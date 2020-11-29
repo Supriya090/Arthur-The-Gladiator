@@ -24,7 +24,7 @@ public:
 	int findIndex(int);
 };
 
-Sorting::Sorting(int first, int last)
+Sorting::Sorting(int first = 1, int last = 40)
 {
 	for (int i = first; i <= last; i++)
 	{
