@@ -13,11 +13,6 @@ class Sorting
 {
 private:
 	vector<int> randomList;
-	sf::Texture boxTexture;
-	sf::Sprite boxSprite;
-	sf::RenderWindow renderWindow;
-	sf::Font numFont;
-	std::vector<std::pair<sf::Sprite, sf::Text>> boxSprites;
 
 public:
 	Sorting(int, int);
@@ -25,9 +20,8 @@ public:
 	void mergeSort(int, int);
 	void quickSort(int, int);
 	int partition(int, int);
-	void displaySort();
+	vector<int> getSort();
 	int findIndex(int);
-	vector<std::pair<sf::Sprite, sf::Text>> setBoxIndices();
 };
 
 Sorting::Sorting(int first, int last)
@@ -41,22 +35,6 @@ Sorting::Sorting(int first, int last)
 	{
 		swapIndex = rand() % randomList.size();
 		std::swap(randomList[i], randomList[swapIndex]);
-	}
-
-	if (!boxTexture.loadFromFile("images/box.png"))
-	{
-		std::cout << "Error Displaying Boxes" << std::endl;
-	};
-
-	boxSprite.setTexture(boxTexture);
-	boxSprite.scale(0.06f, 0.06f);
-	//std::fill(boxSprites.begin(), boxSprites.end(), 0);
-
-	renderWindow.create(sf::VideoMode(1000, 900), "Arthur- The Gladiator (Level 3)");
-	
-	if (!numFont.loadFromFile("fonts/mainFont.ttf"))
-	{
-		std::cout << "Error Displaying Fonttt" << std::endl;
 	}
 }
 
@@ -134,13 +112,15 @@ void Sorting::mergeSort(int l, int r)
 	merge(l, m, r);
 }
 
-void Sorting::displaySort()
+vector<int> Sorting::getSort()
 {
+	vector<int> randomInts;
 	for (int i = 0; i < randomList.size(); i++)
 	{
-		cout << randomList[i] << " ";
+		//cout << randomList[i] << " ";
+		randomInts.push_back(randomList[i]);
 	}
-	cout << endl;
+	return randomInts;
 }
 
 int Sorting::findIndex(int randomNum)
@@ -150,31 +130,6 @@ int Sorting::findIndex(int randomNum)
 		std::cout << i + 1 << ": " << randomList[i] << std::endl;
 		if (randomList[i] == randomNum)	return i+1;
 	}
-}
-
-vector<std::pair<sf::Sprite, sf::Text>> Sorting::setBoxIndices()
-{
-	std::vector<std::pair<sf::Sprite, sf::Text>> boxes;
-	int coordY = 200;
-	int a = 0;
-	for (int j = 0; j < 4; j++)
-	{
-		int coordX = 15;
-		for (int i = 0; i < 10; i++)
-		{
-			//cout << randomList[a] << endl;
-			sf::Text message(std::to_string(randomList[a]), numFont, 25);
-			boxSprites.push_back(make_pair(boxSprite, message));
-			boxSprites[a].first.setPosition(coordX, coordY);
-			//boxSprites[a].second.scale(8.0f, 8.0f);
-			boxSprites[a].second.setPosition(coordX + 25, coordY + 35);
-			boxes.push_back(make_pair(boxSprites[a].first, boxSprites[a].second));
-			coordX += 100;
-			a++;
-		}
-		coordY += 140;
-	}
-	return boxes;
 }
 
 /* This function takes last element as pivot, places

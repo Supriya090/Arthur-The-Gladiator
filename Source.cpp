@@ -14,12 +14,13 @@ Sorting s1(1, 40);
 //Initial Declarations of SFML components
 sf::Font font, openFont;
 sf::Event event;
-sf::Texture bgTexture, openBgTexture, princessTexture;
+sf::Texture bgTexture, boxTexture, openBgTexture, princessTexture;
 sf::Color color(181, 101, 29);
 sf::RenderWindow renderWindow(sf::VideoMode(1000, 900), "Arthur- The Gladiator (Level 3)");
 
 int playerMoves = 20, randomNum, randomNumIndex, flag = 0;
 bool gameWon = 0, noMoves = 0, noEnoughMoves = 0, giveUp = 0;
+vector<int> randomList;
 void gameOver();
 void setVector();
 
@@ -137,9 +138,7 @@ void setVector()
 					if (X > 470 && X < 730 && Y > 50 && Y < 80)
 					{
 						//sort in ascending order
-						s1.displaySort();
 						s1.mergeSort(0, 39);
-						s1.displaySort();
 						flag = 1;
 						playerMoves -= 10;
 					}
@@ -147,9 +146,7 @@ void setVector()
 					if (X > 730 && X < 985 && Y > 50 && Y < 80)
 					{
 						//sort in descending order
-						s1.displaySort();
 						s1.quickSort(0, 39);
-						s1.displaySort();
 						flag = -1;
 						playerMoves -= 10;
 					}
@@ -272,11 +269,11 @@ void setVector()
 			}
 		}
 
-		sf::Sprite bgSprite(bgTexture);
-
+		sf::Sprite bgSprite(bgTexture), boxSprite(boxTexture);
+		boxSprite.scale(0.06f, 0.06f);
 		bgSprite.scale(2.0f, 3.0f);
+		std::vector<std::pair<sf::Sprite, sf::Text>> boxSprites;
 		
-
 		sf::RectangleShape dSortButton(sf::Vector2f(250, 30));
 		dSortButton.setFillColor(color);
 		dSortButton.setPosition(sf::Vector2f(475, 50));
@@ -357,14 +354,31 @@ void setVector()
 		giveUpText.setFillColor(sf::Color::White);
 		giveUpText.setPosition(sf::Vector2f(285, 420));
 
-		vector<std::pair<sf::Sprite, sf::Text>> box = s1.setBoxIndices();
+		randomList = s1.getSort();
+		int coordY = 200;
+		int a = 0;
+		for (int j = 0; j < 4; j++)
+		{
+			int coordX = 15;
+			for (int i = 0; i < 10; i++)
+			{
+				sf::Text message(std::to_string(randomList[a]), font, 25);
+				boxSprites.push_back(make_pair(boxSprite, message));
+				boxSprites[a].first.setPosition(coordX, coordY);
+				boxSprites[a].second.setPosition(coordX + 25, coordY + 35);
+				coordX += 100;
+				a++;
+			}
+			coordY += 140;
+		}
 
 		renderWindow.clear();
 		renderWindow.draw(bgSprite);
+
 		for (int i = 0; i < 40; i++)
 		{
-			renderWindow.draw(box[i].first);
-			renderWindow.draw(box[i].second);
+			renderWindow.draw(boxSprites[i].first);
+			renderWindow.draw(boxSprites[i].second);
 		}
 
 		renderWindow.draw(dSortButton);
@@ -425,6 +439,10 @@ int main()
 	if (!font.loadFromFile("fonts/mainFont.ttf"))
 	{
 		std::cout << "Error Displaying Font" << std::endl;
+	}
+	if (!boxTexture.loadFromFile("images/box.png"))
+	{
+		std::cout << "Error Displaying Boxes" << std::endl;
 	}
 	if (!princessTexture.loadFromFile("images/princess.png", sf::IntRect(0, 0, 110, 170)))
 	{
