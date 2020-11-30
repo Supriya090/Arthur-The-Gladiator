@@ -25,17 +25,17 @@ private:
 	Sorting s1;
 
 public:
-	GameLevel3(int, int);
+	GameLevel3(int);
 	void setVector();
 	void gameOver();
 };
 
 
-GameLevel3::GameLevel3(int movesRemaining, int randomNumber)
+GameLevel3::GameLevel3(int movesRemaining)
 {
 	playerMoves = movesRemaining;
-	randomNum = randomNumber;
-	randomNumIndex = s1.findIndex(randomNum);
+	randomNum = s1.getRandomNum();
+	randomNumIndex = s1.findIndex();
 	color.r = 181;
 	color.g = 101; 
 	color.b = 29;
@@ -180,8 +180,7 @@ void GameLevel3::setVector()
 				{
 					int xPos = selectSquare.getPosition().x;
 					int yPos = selectSquare.getPosition().y;
-					if (flag == 1)	randomNumIndex = randomNum;
-					if (flag == -1)	randomNumIndex = 41 - randomNum;
+					randomNumIndex = s1.findIndex();
 					int remVal = randomNumIndex % 10;
 					int divVal = randomNumIndex / 10;
 					if (remVal == 0)
