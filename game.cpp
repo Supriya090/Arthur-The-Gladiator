@@ -42,13 +42,13 @@ void game::start()
 
 	//Loading the font
 	font.loadFromFile("arial.ttf");
-	Text move("Moves:", font, 15);
+	Text move("Moves", font, 15);
 	Text m(" ", font, 15);
 
-	Text lives("Life:", font, 15);
+	Text lives("Life", font, 15);
 	Text l(" ", font, 15);
 
-	Text rule("Help", font, 15);
+	Text rule("Rules", font, 15);
 
 	Text h("Hint", font, 15);
 
@@ -91,7 +91,7 @@ void game::start()
 	}
 
 	//ruleset texture
-	if (!texrule.loadFromFile("media/rules.jpg"))
+	if (!texrule.loadFromFile("media/rules1.png"))
 	{
 		cout << "Unable to load image!";
 	}
@@ -147,7 +147,7 @@ void game::start()
 	// Thread thread(std::bind(&comments,"asdsfdf"));
 
 	//Creating the obstacles
-	for (int i = 0; i < 300; i++)
+	for (int i = 0; i < 400; i++)
 	{
 		int a = rand() % 30, b = rand() % 30;
 
@@ -290,7 +290,7 @@ void game::start()
 				int X = event.mouseButton.x;
 				int Y = event.mouseButton.y;
 
-				if (X > 930 && X < 1000 && Y > 280 && Y < 350)
+				if (X > 900 && X < 1000 && Y > 280 && Y < 350)
 				{
 					if (hints == 1)
 					{
@@ -317,7 +317,7 @@ void game::start()
 					}
 				}
 
-				if (X > 930 && X < 1000 && Y > 200 && Y < 270)
+				if (X > 900 && X < 1000 && Y > 200 && Y < 270)
 				{
 					rules = 1;
 				}
@@ -353,40 +353,40 @@ void game::start()
 		window.draw(bg);
 
 		//display the number of moves remaining
-		coin.setPosition(930, 40);
+		coin.setPosition(915, 40);
 		window.draw(coin);
 
 		//display the number of life
-		lfe.setPosition(930, 120);
+		lfe.setPosition(915, 120);
 		window.draw(lfe);
 
 		//display the rules of game
-		rulebox.setPosition(930, 200);
+		rulebox.setPosition(915, 200);
 		window.draw(rulebox);
 
 		//Game hint, launch dijkstra algorithm
-		hint.setPosition(930, 280);
+		hint.setPosition(915, 280);
 		window.draw(hint);
 
 		//number of moves recorded
-		move.setPosition(945, 55);
-		m.setPosition(955, 75);
+		move.setPosition(932, 55);
+		m.setPosition(940, 78);
 		window.draw(move);
 
 		//number of lives recorded
-		lives.setPosition(950, 135);
-		l.setPosition(960, 155);
+		lives.setPosition(940, 135);
+		l.setPosition(950, 158);
 		window.draw(lives);
 
 		//Rules of the game
-		rule.setPosition(950, 225);
+		rule.setPosition(935, 225);
 		window.draw(rule);
 
 		//hint of the game
-		h.setPosition(950, 305);
+		h.setPosition(940, 305);
 		window.draw(h);
 
-		//to conert int to string
+		//to convert int to string
 		stringstream smove, slife;
 
 		//display the number of moves
@@ -527,8 +527,6 @@ void game::start()
 			sf::sleep(seconds(7));
 			rules = 0;
 		}
-
-
 		window.display();
 	}
 }
@@ -541,12 +539,11 @@ void game::gameOver()
 
 void game::comments(string image)
 {
-
 	sf::RenderWindow window;
 	window.setPosition(Vector2i(670, 700));
-	window.create(sf::VideoMode(300, 150), "", sf::Style::None);
+	window.create(sf::VideoMode(287, 177), "", sf::Style::None);
 
-	sf::RectangleShape shape(Vector2f(280.0f, 130.0f));
+	sf::RectangleShape shape(Vector2f(267.0f, 157.0f));
 	shape.setPosition(10, 10);
 	shape.setOutlineThickness(3);
 	shape.setFillColor(Color::Transparent);
@@ -558,14 +555,13 @@ void game::comments(string image)
 	}
 	sf::Sprite sprite;
 	sprite.setTexture(texture);
-	sprite.setScale(0.7f, 0.7f);
+	//sprite.setScale(0.7f, 0.7f);
 
 	window.clear();
 	window.draw(sprite);
 	window.draw(shape);
 	window.display();
 	sf::sleep(sf::milliseconds(900));
-	// usleep(9000000);
 	window.close();
 }
 
@@ -579,9 +575,9 @@ void game::nextlevel()
 	sf::Texture texbg;
 	sf::Sprite bg;
 
-	window.create(sf::VideoMode(1000, 900), "Arthur-The Gradiator", sf::Style::Default);
+	window.create(sf::VideoMode(1000, 650), "Arthur-The Gradiator", sf::Style::Default);
 
-	texbg.loadFromFile("media/win1.jpg");
+	texbg.loadFromFile("media/win1.png");
 	bg.setTexture(texbg);
 
 
@@ -600,7 +596,7 @@ void game::nextlevel()
 				int row = Y / 30; //Reversed notion of row & column
 				int col = X / 30;
 
-				if (X > 700 && X < 1000 && Y > 750 && Y < 900)
+				if (X > 700 && X < 1000 && Y > 500 && Y < 650)
 				{
 					window.close();
 					l2.start();
@@ -610,7 +606,6 @@ void game::nextlevel()
 
 		window.clear();
 		window.draw(bg);
-
 		window.display();
 	}
 }

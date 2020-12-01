@@ -66,22 +66,41 @@ void level2::reset(int A, int B)
 
 void level2::start()
 {
-	// //opening of game window
-	sf::RenderWindow gamewindow(sf::VideoMode(1000, 900), "Arthur- The Gladiator (Level 3):Knight Move", sf::Style::Default);
-	sf::RectangleShape shape(sf::Vector2f(gridSizef, gridSizef));
-
+	sf::RenderWindow renderOpeningWindow(sf::VideoMode(1000, 650), "Arthur- The Gladiator (Level 2)");
 	sf::Texture intro;
-	intro.loadFromFile("media/level2.jpg");
+	intro.loadFromFile("media/level2.png");
 	sf::Sprite intro2;
-	intro2.setTexture(intro);
+	intro2 .setTexture(intro);
 
+	sf::Event event;
 	//draw the intro page
-	gamewindow.clear();
-	gamewindow.draw(intro2);
-	gamewindow.display();
+	while (renderOpeningWindow.isOpen())
+	{
 
+		while (renderOpeningWindow.pollEvent(event))
+		{
 
+			if (event.type == sf::Event::EventType::Closed)
+				renderOpeningWindow.close();
 
+			int X = event.mouseButton.x;
+			int Y = event.mouseButton.y;
+
+			if (X > 700 && X < 950 && Y > 500 && Y < 600)
+			{
+				renderOpeningWindow.close();
+				startGame();
+			}
+		}
+		renderOpeningWindow.clear();
+		renderOpeningWindow.draw(intro2);
+		renderOpeningWindow.display();
+	}
+}
+
+void level2::startGame(){
+
+	sf::RenderWindow gamewindow(sf::VideoMode(1000, 900), "Arthur- The Gladiator (Level 3):Knight Move", sf::Style::Default);
 	CircleShape coin(35); //for displaying no of moves
 	coin.setFillColor(Color::Black);
 	coin.setOutlineThickness(2);
@@ -100,18 +119,25 @@ void level2::start()
 
 	//Loading the font
 	fonts.loadFromFile("arial.ttf");
-	Text move("Moves:", fonts, 15);
+	Text move("Moves", fonts, 15);
 	Text m(" ", fonts, 15);
 
-	Text lives("Life:", fonts, 15);
+	Text lives("Life", fonts, 15);
 	Text l(" ", fonts, 15);
 
-	Text rule("Help", fonts, 15);
+	Text rule("Rules", fonts, 15);
 
 	Text h("Hint", fonts, 15);
 
 	//REPRESENT THE ORDER OF THE SHORTEST PATH
 	sf::Text order(" ", fonts, 30);
+
+	//rules set
+	if (!rulesTexture.loadFromFile("media/rules2.png"))
+	{
+		//std::cout << "Error loading paddle texture :(" << std::endl;
+	}
+	rulesSprite.setTexture(rulesTexture);
 
 	//background wallpaper
 	if (!texback.loadFromFile("media/wallpaper.png"))
@@ -159,8 +185,8 @@ void level2::start()
 	sf::CircleShape sPath(25);
 	sPath.setFillColor(sf::Color::Green);
 
-	//window events
 
+	//window events
 	while (gamewindow.isOpen())
 	{
 
@@ -249,6 +275,7 @@ void level2::start()
 						cout << "Knight can't move in the specified position";
 					}
 				}
+
 			}
 		}
 
@@ -307,6 +334,12 @@ void level2::start()
 				(valid(a - 2, b - 1));
 
 
+			}
+
+			//Display Rules
+			if (X > 930 && X < 1000 && Y > 200 && Y < 280)
+			{
+				seeRules = 1;
 			}
 		}
 
@@ -393,6 +426,13 @@ void level2::start()
 			}
 		}
 
+		if (seeRules == 1)
+		{
+			gamewindow.draw(rulesSprite);
+			gamewindow.display();
+			sf::sleep(sf::seconds(7));
+			seeRules = 0;
+		}
 
 		//displaying knight on chessboard
 		gamewindow.draw(knight);
@@ -415,9 +455,9 @@ void level2::nextlevel() {
 	sf::Texture texbg;
 	sf::Sprite bg;
 
-	window.create(sf::VideoMode(1000, 900), "Arthur-The Gradiator", sf::Style::Default);
+	window.create(sf::VideoMode(1000, 650), "Arthur-The Gradiator", sf::Style::Default);
 
-	texbg.loadFromFile("media/win2.jpg");
+	texbg.loadFromFile("media/win2.png");
 	bg.setTexture(texbg);
 
 
@@ -436,7 +476,7 @@ void level2::nextlevel() {
 				int row = Y / 30; //Reversed notion of row & column
 				int col = X / 30;
 
-				if (X > 700 && X < 1000 && Y > 750 && Y < 900)
+				if (X > 700 && X < 1000 && Y > 500 && Y < 650)
 				{
 					window.close();
 					l3.start();
@@ -446,7 +486,6 @@ void level2::nextlevel() {
 
 		window.clear();
 		window.draw(bg);
-
 		window.display();
 	}
 

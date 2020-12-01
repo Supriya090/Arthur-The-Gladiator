@@ -11,7 +11,7 @@ public:
 	gameWindows(string image)
 	{
 
-		sf::RenderWindow window(sf::VideoMode(1000, 900), "---Game Over---");
+		sf::RenderWindow window(sf::VideoMode(1000, 650), "---Game Over---");
 
 		sf::Texture gOvertex;
 		if (!gOvertex.loadFromFile(image))
@@ -42,13 +42,12 @@ public:
 					int mouseY = event.mouseButton.y;
 
 
-					if (mouseX > 406 && mouseX < 701 && mouseY > 817 && mouseY < 900)
+					if (mouseX > 600 && mouseX < 850 && mouseY > 400 && mouseY < 500)
 					{
 						window.close();
 					}
-					else if (mouseX > 725 && mouseX < 1000 && mouseY > 817 && mouseY < 900)
+					else if (mouseX > 150 && mouseX < 450 && mouseY > 400 && mouseY < 500)
 					{
-
 						window.close();
 						MainMenu m;
 						m.Start();

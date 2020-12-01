@@ -1,5 +1,9 @@
 #include "level3.h"
 #include "windows.h"
+#include <chrono>
+#include <thread>
+
+using namespace std::chrono_literals;
 
 GameLevel3::GameLevel3(int movesRemaining)
 {
@@ -10,7 +14,7 @@ GameLevel3::GameLevel3(int movesRemaining)
 	color.g = 101;
 	color.b = 29;
 
-	if (!bgTexture.loadFromFile("images/dungeon.jpg"))
+	if (!bgTexture.loadFromFile("media/dungeon.jpg"))
 	{
 		std::cout << "Error Displaying Background Image" << std::endl;
 	};
@@ -18,41 +22,29 @@ GameLevel3::GameLevel3(int movesRemaining)
 	{
 		std::cout << "Error Displaying Font" << std::endl;
 	}
-	if (!boxTexture.loadFromFile("images/box.png"))
+	if (!boxTexture.loadFromFile("media/box.png"))
 	{
 		std::cout << "Error Displaying Boxes" << std::endl;
 	}
-	if (!princessTexture.loadFromFile("images/princess.png", sf::IntRect(0, 0, 110, 170)))
+	if (!princessTexture.loadFromFile("media/princess.png", sf::IntRect(0, 0, 110, 170)))
 	{
 		std::cout << "Error displaying Princess Image" << std::endl;
+	}
+	if (!ruleTexture.loadFromFile("media/rules3.png"))
+	{
+		cout << "Unable to load image!";
 	}
 }
 
 void GameLevel3::start()
 {
-
-	sf::RenderWindow renderOpeningWindow(sf::VideoMode(1000, 900), "Arthur- The Gladiator (Level 3)");
+	sf::RenderWindow renderOpeningWindow(sf::VideoMode(1000, 650), "Arthur- The Gladiator (Level 3)");
 	sf::Texture intro;
-	intro.loadFromFile("media/level3.jpg");
+	intro.loadFromFile("media/level3.png");
 	sf::Sprite intro3;
 	intro3.setTexture(intro);
 
 	//draw the intro page
-	renderOpeningWindow.clear();
-	renderOpeningWindow.draw(intro3);
-	renderOpeningWindow.display();
-
-
-	if (!openBgTexture.loadFromFile("media/2.jpg"))
-	{
-		std::cout << "Error Displaying Background Image" << std::endl;
-	};
-
-	if (!openFont.loadFromFile("fonts/ArialCE.ttf"))
-	{
-		std::cout << "Error Displaying Font" << std::endl;
-	}
-	sf::Sprite bgSprite(openBgTexture);
 	while (renderOpeningWindow.isOpen())
 	{
 
@@ -65,62 +57,14 @@ void GameLevel3::start()
 			int X = event.mouseButton.x;
 			int Y = event.mouseButton.y;
 
-			if (X > 450 && X < 580 && Y > 460 && Y < 510)
+			if (X > 700 && X < 950 && Y > 500 && Y < 600)
 			{
 				renderOpeningWindow.close();
 				setVector();
 			}
 		}
-
-		std::vector<std::string> openingInfo(5);
-		std::vector<sf::Text> openingInfoText(5);
-
-		sf::Text openingInfo1("Princess is in one of the boxes.", openFont, 20);
-		sf::Text openingInfo2("Find the box and press enter to free the princess.", openFont, 20);
-		sf::Text openingInfo3("You have " + std::to_string(playerMoves) + " moves remaining. Sorting in either order takes 10 moves.", openFont, 20);
-		sf::Text openingInfo4("Click on continue to enter the game.", openFont, 20);
-
-		openingInfo1.setPosition(370, 265);
-		openingInfo1.setFillColor(sf::Color::Black);
-
-		openingInfo2.setPosition(320, 305);
-		openingInfo2.setFillColor(sf::Color::Black);
-
-		openingInfo3.setPosition(190, 345);
-		openingInfo3.setFillColor(sf::Color::Black);
-
-		openingInfo4.setPosition(360, 385);
-		openingInfo4.setFillColor(sf::Color::Black);
-
-		sf::RectangleShape dSortButton(sf::Vector2f(130, 40));
-		dSortButton.setFillColor(sf::Color::Black);
-		dSortButton.setPosition(sf::Vector2f(450, 460));
-
-		sf::RectangleShape Outline(sf::Vector2f(720, 470));
-		Outline.setFillColor(sf::Color::White);
-		Outline.setPosition(sf::Vector2f(135, 180));
-		Outline.setOutlineThickness(3);
-		Outline.setOutlineColor(sf::Color::Black);
-
-		sf::Text dSort("Continue", openFont, 20);
-		dSort.setPosition(sf::Vector2f(475, 467));
-		dSort.setFillColor(sf::Color::White);
-
-		//sleep the window for 3 seconds
-		sf::sleep(sf::milliseconds(5000));
-
 		renderOpeningWindow.clear();
-		renderOpeningWindow.draw(bgSprite);
-		renderOpeningWindow.draw(Outline);
-
-		renderOpeningWindow.draw(openingInfo1);
-		renderOpeningWindow.draw(openingInfo2);
-		renderOpeningWindow.draw(openingInfo3);
-		renderOpeningWindow.draw(openingInfo4);
-
-		renderOpeningWindow.draw(dSortButton);
-
-		renderOpeningWindow.draw(dSort);
+		renderOpeningWindow.draw(intro3);
 		renderOpeningWindow.display();
 	}
 }
@@ -139,6 +83,8 @@ void GameLevel3::setVector()
 	princessSprite.setTextureRect(sf::IntRect(30, 30, 80, 130));
 	princessSprite.setScale(0.35f, 0.35f);
 	princessSprite.setPosition(300, 300);
+
+	sf::Sprite ruleSprite(ruleTexture);
 
 	std::cout << "Random number " << randomNum << " is at index " << randomNumIndex << std::endl;
 
@@ -183,6 +129,10 @@ void GameLevel3::setVector()
 				{
 					giveUp = 1;
 					noEnoughMoves = 0;
+				}
+				if (X > 180 && X < 280 && Y > 50 && Y < 80)
+				{
+					seeRules = 1;
 				}
 			}
 
@@ -319,6 +269,12 @@ void GameLevel3::setVector()
 		giveUpButton.setOutlineThickness(2);
 		giveUpButton.setOutlineColor(sf::Color::White);
 
+		sf::RectangleShape rulesButton(sf::Vector2f(100, 30));
+		rulesButton.setFillColor(color);
+		rulesButton.setPosition(sf::Vector2f(180, 50));
+		rulesButton.setOutlineThickness(2);
+		rulesButton.setOutlineColor(sf::Color::White);
+
 		sf::RectangleShape princessInfoBox(sf::Vector2f(230, 30));
 		princessInfoBox.setFillColor(color);
 		princessInfoBox.setPosition(sf::Vector2f(625, 100));
@@ -352,6 +308,10 @@ void GameLevel3::setVector()
 		sf::Text giveUpButtonText("Give Up", font, 16);
 		giveUpButtonText.setPosition(sf::Vector2f(75, 55));
 		giveUpButtonText.setFillColor(sf::Color::White);
+
+		sf::Text rulesButtonText("Rules", font, 16);
+		rulesButtonText.setPosition(sf::Vector2f(205, 55));
+		rulesButtonText.setFillColor(sf::Color::White);
 
 		sf::Text congratulationsText("Congratulations! You won with " + std::to_string(playerMoves) + " moves remaining!", font, 20);
 		congratulationsText.setFillColor(sf::Color::White);
@@ -408,9 +368,19 @@ void GameLevel3::setVector()
 		renderWindow.draw(movesText);
 		renderWindow.draw(giveUpButton);
 		renderWindow.draw(giveUpButtonText);
+		renderWindow.draw(rulesButton);
+		renderWindow.draw(rulesButtonText);
 		renderWindow.draw(princessInfoBox);
 		renderWindow.draw(princessInfoText);
 		renderWindow.draw(selectSquare);
+
+		if (seeRules == 1)
+		{
+			renderWindow.draw(ruleSprite);
+			renderWindow.display();
+			sf::sleep(sf::seconds(4));
+			seeRules = 0;
+		}
 		if (noMoves || gameWon || noEnoughMoves || giveUp)
 		{
 			if (gameWon)
@@ -426,13 +396,7 @@ void GameLevel3::setVector()
 			if (gameWon)
 			{
 				renderWindow.draw(congratulationsText);
-				sf::sleep(sf::seconds(2));
-				win.loadFromFile("media/win3.jpg");
-				winpage.setTexture(win);
-				renderWindow.draw(winpage);
-				sf::sleep(sf::milliseconds(2000));
-				renderWindow.close();
-				gameWindows g("media/final.jpg");
+				
 			}
 			if (noEnoughMoves)
 			{
@@ -445,28 +409,35 @@ void GameLevel3::setVector()
 			}
 		}
 		renderWindow.display();
-		if (noMoves || giveUp)
+		if (noMoves || giveUp || gameWon)
 		{
 			gameOver();
 			renderWindow.close();
-			gameWindows g("media/gameover.png");
 		}
 	}
 }
 
 void GameLevel3::gameOver()
 {
+	std::this_thread::sleep_for(1.5s);
+	renderWindow.close();
 	if (gameWon)
 	{
 		std::cout << "Congratulations! You won with " << playerMoves << " moves remaining!" << std::endl;
+		gameWon = 0;
+		gameWindows g("media/winner.png");
 	}
-	else if (noMoves)
+	else
 	{
-		std::cout << "You are out of moves. Game Over!" << std::endl;
+		if (noMoves) {
+			std::cout << "You are out of moves. Game Over!" << std::endl;
+			noMoves = 0;
+		}
+		if (giveUp)
+		{
+			std::cout << "You gave up with " << playerMoves << " moves remaining!" << std::endl;
+			giveUp = 0;
+		}
+		gameWindows g("media/gameover.png");
 	}
-	if (giveUp)
-	{
-		std::cout << "You gave up with " << playerMoves << " moves remaining!" << std::endl;
-	}
-	renderWindow.close();
 }

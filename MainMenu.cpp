@@ -10,16 +10,16 @@
 MainMenu::MainMenu()
 
 {
-	window1.create(sf::VideoMode(1000, 900), "Arthur-The Gradiator", sf::Style::Default);
+	window1.create(sf::VideoMode(1000, 650), "Arthur-The Gladiator", sf::Style::Default);
 	selectedIndex = 0,
-		isPressedUp = false;
+	isPressedUp = false;
 	isPressedDown = false;
 	isPressedEnter = false;
 
 
-	texbg.loadFromFile("media/start.jpg");
+	texbg.loadFromFile("media/start.png");
 	bg.setTexture(texbg);
-	bg.setScale(0.63f, 1.0f);
+	//bg.setScale(1.0f, 1.0f);
 }
 
 void MainMenu::Start()
@@ -34,8 +34,6 @@ void MainMenu::Start()
 			case sf::Event::KeyPressed:
 				playerInput(event.key.code, true);
 				break;
-
-
 			case sf::Event::KeyReleased:
 				playerInput(event.key.code, false);
 				break;
@@ -52,32 +50,42 @@ void MainMenu::drawMenu()
 {
 
 	sf::Text menu[5];
+	sf::RectangleShape menuBox[5];
+
 	if (!font.loadFromFile("arial.ttf")) {
 		// handle error
 	}
 
 	menu[0].setString(" Play");
-	menu[0].setPosition(sf::Vector2f(449, 600));
+	menu[0].setPosition(sf::Vector2f(470, 400));
 
 	menu[1].setString(" Rules");
-	menu[1].setPosition(sf::Vector2f(445, 700));
+	menu[1].setPosition(sf::Vector2f(465, 470));
 
 	menu[2].setString(" Exit");
-	menu[2].setPosition(sf::Vector2f(449, 800));
+	menu[2].setPosition(sf::Vector2f(470, 540));
 
+	menuBox[0].setPosition(sf::Vector2f(450, 395));
+	menuBox[1].setPosition(sf::Vector2f(450, 465));
+	menuBox[2].setPosition(sf::Vector2f(450, 535));
 
-	for (int j = 0; j < 5; j++)
+	for (int j = 0; j < 3; j++)
 	{
 		menu[j].setFont(font);
 		menu[j].setStyle(sf::Text::Bold);
 		menu[j].setCharacterSize(25);
-		menu[j].setFillColor(sf::Color::Black);
+		menu[j].setFillColor(sf::Color::Transparent);
+		menuBox[j].setSize(sf::Vector2f(100, 40));
+		menuBox[j].setOutlineColor(sf::Color::White);
+		menuBox[j].setOutlineThickness(3);
 	}
 	window1.clear(sf::Color::White);
 	window1.draw(bg);
-	for (int i = 0; i < 5; i++)
+	for (int i = 0; i < 3; i++)
 	{
-		menu[i].setFillColor(i == selectedIndex ? sf::Color::Red : sf::Color::Black);
+		menu[i].setFillColor(i == selectedIndex ? sf::Color::White : sf::Color::Black);
+		menuBox[i].setFillColor(i == selectedIndex ? sf::Color::Black : sf::Color::White);
+		window1.draw(menuBox[i]);
 		window1.draw(menu[i]);
 	}
 	window1.display();
@@ -124,11 +132,10 @@ void MainMenu::GetPressed()
 		exit(0);
 	case(0):
 		//GameLevel3 l3(30);
-
-		level2 l2(30,2);
-		l2.start();
-		//game game;
+		//l3.start();
+		game game;
 		//game.start();
+		Intro();
 		break;
 
 	}
@@ -139,10 +146,10 @@ void MainMenu::Intro()
 
 	sf::Texture tex[4];
 	//Load the images for introduction
-	tex[0].loadFromFile("media/1.jpg");
-	tex[1].loadFromFile("media/2.jpg");
-	tex[2].loadFromFile("media/3.jpg");
-	tex[3].loadFromFile("media/4.jpg");
+	tex[0].loadFromFile("media/1.png");
+	tex[1].loadFromFile("media/2.png");
+	tex[2].loadFromFile("media/3.png");
+	tex[3].loadFromFile("media/4.png");
 
 	sf::Sprite sprite[4];
 

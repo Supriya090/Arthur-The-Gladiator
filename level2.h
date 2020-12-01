@@ -30,20 +30,20 @@ public:
 	void valid(int x, int y);
 	void reset(int x, int y);
 	void nextlevel();
+	void startGame();
 	//drawing chessboard size 8*8
 	sf::RectangleShape tileMap[N][N];
 
 private:
 	sf::Font fonts;
-	sf::Texture texknight, texprincess, texback;
-	sf::Sprite knight, princess, background;
+	sf::Texture texknight, texprincess, texback, rulesTexture;
+	sf::Sprite knight, princess, background, rulesSprite;
 	float gridSizef = 900 / N;
 
 	int posX = 0, posY = 0, destX, destY;
 	float hintX, hintY;
-	int moves, score;
-	int life;
-
+	int moves, score, life;
+	bool seeRules = 0;
 	bfs bf;
 
 };

@@ -26,7 +26,7 @@ class game {
 
 private:
 
-	int grid[30][30];       //map with obstacle
+	int grid[num][num];       //map with obstacle
 	int posX = 2, posY = 2, destX = 7, destY = 8;
 
 	int moves = 100;
