@@ -41,7 +41,7 @@ void game::start()
 	attsound.setBuffer(attacked);
 
 	//Loading the font
-	font.loadFromFile("arial.ttf");
+	font.loadFromFile("fonts/arial.ttf");
 	Text move("Moves", font, 15);
 	Text m(" ", font, 15);
 

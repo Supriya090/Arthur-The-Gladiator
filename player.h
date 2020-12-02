@@ -29,4 +29,3 @@ private:
 	sf::Clock animationClock; //Player Animation Clock
 	sf::Time animationTime; //Player Animation Time
 };
-

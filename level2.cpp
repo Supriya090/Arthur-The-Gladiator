@@ -118,7 +118,7 @@ void level2::startGame(){
 	rules.setOutlineThickness(2);
 
 	//Loading the font
-	fonts.loadFromFile("arial.ttf");
+	fonts.loadFromFile("fonts/arial.ttf");
 	Text move("Moves", fonts, 15);
 	Text m(" ", fonts, 15);
 
@@ -183,7 +183,9 @@ void level2::startGame(){
 
 	//Represent the Shortest path using bfs
 	sf::CircleShape sPath(25);
-	sPath.setFillColor(sf::Color::Green);
+	sPath.setFillColor(sf::Color(181, 101, 29));
+	sPath.setOutlineColor(sf::Color::White);
+	sPath.setOutlineThickness(2);
 
 
 	//window events
@@ -414,13 +416,13 @@ void level2::startGame(){
 			int sequence = 1;
 			for (int i = bf.pathD.size() - 1; i >= 0; i--)
 			{
-				sPath.setPosition(bf.pathD[i].first * gridSizef + 5, bf.pathD[i].second * gridSizef + 5); //Reversed notion of row & column
+				sPath.setPosition(bf.pathD[i].first * gridSizef + 10, bf.pathD[i].second * gridSizef + 10); //Reversed notion of row & column
 				gamewindow.draw(sPath);                                                             //final pathD
 																									//to conert int to string
 				stringstream seq;
 				seq << sequence;
 				order.setString(seq.str());
-				order.setPosition(bf.pathD[i].first * gridSizef + 18, bf.pathD[i].second * gridSizef + 5);
+				order.setPosition(bf.pathD[i].first * gridSizef + 28, bf.pathD[i].second * gridSizef + 15);
 				gamewindow.draw(order);
 				sequence++;
 			}

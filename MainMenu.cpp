@@ -52,7 +52,7 @@ void MainMenu::drawMenu()
 	sf::Text menu[5];
 	sf::RectangleShape menuBox[5];
 
-	if (!font.loadFromFile("arial.ttf")) {
+	if (!font.loadFromFile("fonts/arial.ttf")) {
 		// handle error
 	}
 
@@ -131,9 +131,11 @@ void MainMenu::GetPressed()
 	case(2):
 		exit(0);
 	case(0):
+		//level2 l2(30, 2);
+		//l2.startGame();
 		//GameLevel3 l3(30);
 		//l3.start();
-		game game;
+		//game game;
 		//game.start();
 		Intro();
 		break;
